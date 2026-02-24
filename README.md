@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Built With](https://img.shields.io/badge/PHP-JavaScript-purple)
 ![Open Source](https://img.shields.io/badge/open--source-yes-brightgreen)
-
+[![Live](https://img.shields.io/badge/live-skiltr.magical.ch-black)](https://skiltr.magical.ch)
 
 Skiltr is an open-source Guild Wars fan project focused on advanced skill exploration, build creation, and structured analysis.
 
