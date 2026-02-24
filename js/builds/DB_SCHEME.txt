@@ -1,0 +1,278 @@
+CREATE TABLE gw_builds (
+  gw_build_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  primary_prof_id TINYINT UNSIGNED NOT NULL,
+  secondary_prof_id TINYINT UNSIGNED NOT NULL DEFAULT 0,
+
+  skill1_id INT UNSIGNED NULL,
+  skill2_id INT UNSIGNED NULL,
+  skill3_id INT UNSIGNED NULL,
+  skill4_id INT UNSIGNED NULL,
+  skill5_id INT UNSIGNED NULL,
+  skill6_id INT UNSIGNED NULL,
+  skill7_id INT UNSIGNED NULL,
+  skill8_id INT UNSIGNED NULL,
+
+  -- derived/cache; can be NULL until first generated
+  buildcode VARCHAR(64) NULL,
+
+  -- optional: for later dedupe
+  skills_hash BINARY(32) NULL,
+  attrs_hash  BINARY(32) NULL,
+
+  KEY idx_profs (primary_prof_id, secondary_prof_id),
+  KEY idx_skill1 (skill1_id),
+  KEY idx_skill2 (skill2_id),
+  KEY idx_skill3 (skill3_id),
+  KEY idx_skill4 (skill4_id),
+  KEY idx_skill5 (skill5_id),
+  KEY idx_skill6 (skill6_id),
+  KEY idx_skill7 (skill7_id),
+  KEY idx_skill8 (skill8_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE gw_build_attributes (
+  gw_build_id BIGINT UNSIGNED NOT NULL,
+  attribute_id SMALLINT UNSIGNED NOT NULL,
+  points TINYINT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (gw_build_id, attribute_id),
+  CONSTRAINT fk_gw_build_attrs_build
+    FOREIGN KEY (gw_build_id) REFERENCES gw_builds(gw_build_id)
+    ON DELETE CASCADE,
+
+  KEY idx_attribute (attribute_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE user_builds (
+  user_build_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  owner_user_id BIGINT UNSIGNED NOT NULL,
+  gw_build_id BIGINT UNSIGNED NOT NULL,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  name VARCHAR(80) NOT NULL,
+  description TEXT NULL,
+  is_public TINYINT(1) NOT NULL DEFAULT 0,
+  position INT NOT NULL DEFAULT 0,
+
+  CONSTRAINT fk_user_builds_user
+    FOREIGN KEY (owner_user_id) REFERENCES users(user_id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_user_builds_gw_build
+    FOREIGN KEY (gw_build_id) REFERENCES gw_builds(gw_build_id)
+    ON DELETE CASCADE,
+
+  KEY idx_owner (owner_user_id, position),
+  KEY idx_public (is_public)
+) ENGINE=InnoDB;
+
+CREATE TABLE user_containers (
+  user_container_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  owner_user_id BIGINT UNSIGNED NOT NULL,
+
+  name VARCHAR(80) NOT NULL,
+
+  type ENUM('build_group','team_build','skill_book','address_book','note_book') NOT NULL,
+
+  position INT NOT NULL DEFAULT 0,
+  is_default TINYINT(1) NOT NULL DEFAULT 0,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_uc_user
+    FOREIGN KEY (owner_user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE,
+
+  UNIQUE KEY uniq_user_container_name (owner_user_id, type, name),
+  KEY idx_owner (owner_user_id),
+  KEY idx_owner_position (owner_user_id, position)
+) ENGINE=InnoDB;
+
+CREATE TABLE user_builds_in_containers (
+  user_container_id BIGINT UNSIGNED NOT NULL,
+  user_build_id BIGINT UNSIGNED NOT NULL,
+  position INT NOT NULL DEFAULT 0,
+
+  PRIMARY KEY (user_container_id, user_build_id),
+
+  CONSTRAINT fk_ubic_container
+    FOREIGN KEY (user_container_id)
+    REFERENCES user_containers(user_container_id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_ubic_build
+    FOREIGN KEY (user_build_id)
+    REFERENCES user_builds(user_build_id)
+    ON DELETE CASCADE,
+
+  KEY idx_container_position (user_container_id, position),
+  KEY idx_build (user_build_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE user_skill_meta (
+  owner_user_id BIGINT UNSIGNED NOT NULL,
+  skill_id INT NOT NULL,
+
+  is_favorite TINYINT(1) NOT NULL DEFAULT 0,
+  rating TINYINT UNSIGNED NULL CHECK (rating <= 5),
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (owner_user_id, skill_id),
+
+  CONSTRAINT fk_usm_user
+    FOREIGN KEY (owner_user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_usm_skill
+    FOREIGN KEY (skill_id)
+    REFERENCES skills(id)
+    ON DELETE CASCADE,
+
+  KEY idx_owner (owner_user_id),
+  KEY idx_rating (rating)
+) ENGINE=InnoDB;
+
+CREATE TABLE user_skill_notes (
+  user_skill_note_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  owner_user_id BIGINT UNSIGNED NOT NULL,
+  skill_id INT NOT NULL,
+
+  note_text TEXT NOT NULL,
+  position INT NOT NULL DEFAULT 0,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_usn_user
+    FOREIGN KEY (owner_user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_usn_skill
+    FOREIGN KEY (skill_id)
+    REFERENCES skills(id)
+    ON DELETE CASCADE,
+
+  KEY idx_owner (owner_user_id),
+  KEY idx_user_skill_position (owner_user_id, skill_id, position)
+) ENGINE=InnoDB;
+
+CREATE TABLE user_labels (
+  user_label_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  owner_user_id BIGINT UNSIGNED NOT NULL,
+
+  name VARCHAR(50) NOT NULL,
+
+  color_primary VARCHAR(20) NOT NULL,
+  color_secondary VARCHAR(20) NULL,
+
+  icon VARCHAR(50) NOT NULL DEFAULT 'fa-tag',
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_ul_user
+    FOREIGN KEY (owner_user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE,
+
+  UNIQUE KEY uniq_user_label_name (owner_user_id, name),
+  KEY idx_owner (owner_user_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE user_skill_labels (
+  owner_user_id BIGINT UNSIGNED NOT NULL,
+  skill_id INT NOT NULL,
+  user_label_id BIGINT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (owner_user_id, skill_id, user_label_id),
+
+  CONSTRAINT fk_usl_user
+    FOREIGN KEY (owner_user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_usl_skill
+    FOREIGN KEY (skill_id)
+    REFERENCES skills(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_usl_label
+    FOREIGN KEY (user_label_id)
+    REFERENCES user_labels(user_label_id)
+    ON DELETE CASCADE,
+
+  KEY idx_owner (owner_user_id),
+  KEY idx_skill (skill_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE user_container_sections (
+  user_container_section_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  user_container_id BIGINT UNSIGNED NOT NULL,
+
+  type ENUM(
+    'manual_skills',
+    'manual_builds',
+    'text',
+    'url_list',
+    'auto_labels',
+    'auto_notes',
+    'auto_favorites',
+    'auto_builds',
+    'friends'
+  ) NOT NULL,
+
+  title VARCHAR(100) NULL,
+  position INT NOT NULL DEFAULT 0,
+
+  config JSON NULL,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_ucs_container
+    FOREIGN KEY (user_container_id)
+    REFERENCES user_containers(user_container_id)
+    ON DELETE CASCADE,
+
+  KEY idx_container_position (user_container_id, position)
+) ENGINE=InnoDB;
+
+CREATE TABLE user_section_items (
+  user_section_item_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  user_container_section_id BIGINT UNSIGNED NOT NULL,
+
+  type ENUM('skill','build','text') NOT NULL,
+
+  skill_id INT NULL,
+  user_build_id BIGINT UNSIGNED NULL,
+  text_content TEXT NULL,
+
+  position INT NOT NULL DEFAULT 0,
+
+  CONSTRAINT fk_usi_section
+    FOREIGN KEY (user_container_section_id)
+    REFERENCES user_container_sections(user_container_section_id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_usi_skill
+    FOREIGN KEY (skill_id)
+    REFERENCES skills(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_usi_build
+    FOREIGN KEY (user_build_id)
+    REFERENCES user_builds(user_build_id)
+    ON DELETE CASCADE,
+
+  KEY idx_section_position (user_container_section_id, position)
+);
+

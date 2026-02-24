@@ -1,0 +1,2605 @@
+/* ========================================================================== */
+/* =============================== RESET & BASE ============================== */
+/* ========================================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+    background-attachment: fixed;
+}
+
+body {
+    font-family: "Asul", serif;
+    color: #efefef;
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.9) 0%,
+            rgba(0, 0, 0, 0.7) 90%,
+            rgba(0, 0, 0, 1) 100%
+        ),
+        url('https://guildwars.magical.ch/img/bg.jpg') no-repeat center center;
+    background-size: cover;
+}
+
+
+/* ========================================================================== */
+/* =============================== APP STRUCTURE ============================= */
+/* ========================================================================== */
+
+.app {
+    display: grid;
+    grid-template-columns: 350px 1fr 350px;
+    height: 100vh;
+    gap: 12px;
+    padding: 12px;
+}
+
+/* =========================================
+   GLOBAL SCROLLBAR STYLE
+========================================= */
+
+.scrollable {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(218,208,186,0.45) transparent;
+}
+
+.scrollable::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+    background-color: rgba(218,208,186,0.45);
+}
+
+.scrollable::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(218,208,186,0.75);
+}
+
+/* ========================================================================== */
+/* ================================ PANELS =================================== */
+/* ========================================================================== */
+
+.panel {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(218, 208, 186, 0.15);
+    padding: 12px;
+    overflow: hidden;
+}
+
+/* ========================================================================== */
+/* ============================= BASE CARD STYLE ============================ */
+/* ========================================================================== */
+
+.card {
+    border: 1px solid #222;
+    border-radius: 6px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 1px 2px rgba(0,0,0,0.35);
+}
+
+/* =========================
+   FORM CONTROL SYSTEM
+========================= */
+
+.form-control {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 6px;
+
+    color: #ddd;
+    padding: 6px 8px;
+    font-size: 13px;
+
+    transition: border 120ms ease, background 120ms ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #dad0ba;
+    background: #181818;
+}
+
+/* ========================================================================== */
+/* =============================== LEFT COLUMN =============================== */
+/* ========================================================================== */
+
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+}
+
+.logo {
+    width: 20%;
+    min-width: 220px;
+    margin: 0 auto;
+}
+
+.logo img {
+    width: 100%;
+    display: block;
+}
+
+.pill-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pill-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.pill-invert {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: grid;
+    place-items: center;
+}
+
+.pill-invert i {
+    color: #4caf50;
+}
+
+.pill-invert.negated i {
+    color: #e53935; /* red eye-slash */
+}
+
+.pill-invert:hover {
+    opacity: 0.85;
+}
+
+.pill-buttons {
+    display: flex;
+    width: 100%;
+    gap: 0px;
+}
+
+.pill-btn {
+    background: transparent;
+    flex: 1 1 0;
+    border: none;
+    padding: 0px;
+    cursor: pointer;
+}
+
+.pill-btn img {
+    width: 100%;
+    height: auto;
+    transition:
+        transform 0.15s ease,
+        filter 0.15s ease,
+        opacity 0.15s ease;
+}
+
+/* inactive */
+.pill-btn:not(.active) img {
+    filter: grayscale(100%);
+    opacity: 0.45;
+    transform: scale(0.85);
+}
+
+/* active */
+.pill-btn.active img {
+    filter: none;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.pill-range-wrap {
+    position: relative;
+    height: 26px;
+    margin: 6px 0;
+
+    /* defaults */
+    --track-bg: #555;
+    --active-bg: var(--range-color, #1e88e5);
+    --thumb-bg: var(--range-color, #1e88e5);
+}
+
+/* base track */
+.range-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 6px;
+    transform: translateY(-50%);
+    border-radius: 3px;
+    background: var(--track-bg);
+    z-index: 0;
+}
+
+/* center (active) segment */
+.range-active {
+    position: absolute;
+    top: 50%;
+    height: 6px;
+    transform: translateY(-50%);
+    border-radius: 3px;
+    background: var(--active-bg);
+    z-index: 1;
+}
+
+/* inputs = thumbs only */
+.pill-range-wrap input[type="range"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 26px;
+
+    -webkit-appearance: none;
+    appearance: none;
+
+    background: none;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* thumbs */
+.pill-range-wrap input[type="range"]::-webkit-slider-thumb {
+    margin-top: -4px;
+    margin-left: -2px; 
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--thumb-bg);
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.pill-range-wrap input[type="range"]::-moz-range-thumb {
+    margin-top: -4px;
+    margin-left: -2px; 
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--thumb-bg);
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.filter-pill-text-input {
+    width: 100%;
+}
+
+/* inverted range visuals */
+.filter-pill.negated .pill-range-wrap {
+    --track-bg: var(--range-color);
+    --active-bg: #555;
+    --thumb-bg: #555;
+}
+
+/* keep invert button tight on the right */
+.pill-invert {
+    flex: 0 0 auto;
+}
+
+.pill-checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 6px 4px;
+}
+
+.pill-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.pill-checkbox-row i {
+    width: 16px;
+    text-align: center;
+}
+
+/* =========================
+   FILTER PILL
+   ========================= */
+
+.filter-pill {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    padding: 8px;
+    margin-bottom: 10px;
+
+    background: rgba(255, 255, 255, 0.03);
+    background-clip: padding-box;
+}
+
+/* header already exists, just refine spacing */
+.filter-pill .pill-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* title style */
+.filter-pill .pill-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #dad0ba;
+    text-transform: none;
+}
+
+/* invert button stays subtle */
+.filter-pill .pill-invert {
+    opacity: 0.75;
+}
+
+.filter-pill .pill-invert:hover {
+    opacity: 1;
+}
+
+/* =========================
+   RANGE LABEL
+   ========================= */
+
+.pill-range-label {
+    text-align: center;
+    font-size: 12px;
+    color: #bdb6a3;
+    opacity: 0.85;
+}
+
+/* =========================
+   EQUALS BUTTON ROW
+   ========================= */
+
+.filter-pill .pill-buttons {
+    margin-top: 4px;
+}
+
+/* =========================
+   FILTER CAPSULE
+   ========================= */
+
+.filter-capsule {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 12px;
+    margin-bottom: 16px;
+
+    background: rgba(255,255,255,0.02);
+    background-clip: padding-box;
+
+    border-radius: 8px;
+}
+
+/* capsule header */
+
+.capsule-header {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+}
+
+
+.capsule-remove-btn {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 0;
+}
+
+
+/* =========================
+   REMOVE ICONS (PILL + CAPSULE)
+========================= */
+
+/* add new capsule button */
+
+.capsule-add-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 13px;
+    color: #dad0ba;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.capsule-add-btn:hover {
+    background: rgba(255,255,255,0.07);
+}
+
+/* =========================
+   REMOVE ICONS (PILL + CAPSULE)
+========================= */
+
+.pill-remove,
+.capsule-remove-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+}
+
+.pill-remove i,
+.capsule-remove-btn i {
+    color: #aaa;        /* subtle neutral */
+    transition: color 0.15s ease;
+}
+
+/* hover */
+
+.pill-remove:hover,
+.capsule-remove-btn:hover {
+    opacity: 1;
+}
+
+.pill-remove:hover i,
+.capsule-remove-btn:hover i {
+    color: #e53935;     /* red only on hover */
+}
+
+/* =========================
+   FILTER SELECTOR GRID
+========================= */
+
+.filter-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.filter-selector-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 8px;
+
+    background: rgba(255,255,255,0.04);
+    border: 1px solid #222;
+    border-radius: 6px;
+
+    font-size: 12px;
+    color: #dad0ba;
+
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.filter-selector-btn:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.capsule-add-filter-btn {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 6px;
+    font-size: 12px;
+    color: #dad0ba;
+    cursor: pointer;
+}
+
+.skilltype-tree {
+    overflow: visible;
+    max-height: none;
+    height: auto;
+}
+
+.skilltype-node {
+    font-size: 13px;
+}
+
+.skilltype-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    transition: background 120ms ease;
+}
+
+.skilltype-row:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+.skilltype-row input[type="checkbox"] {
+    accent-color: #ff7700;
+    cursor: pointer;
+}
+
+.skilltype-toggle {
+    width: 14px;
+    text-align: center;
+    opacity: 0.7;
+    transition: opacity 120ms ease;
+}
+
+.skilltype-toggle:hover {
+    opacity: 1;
+}
+
+.skilltype-children {
+    margin-left: 6px;
+}
+
+.pill-prof-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.pill-vertical-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pill-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+/* ========================================================================== */
+/* ============================== CENTER COLUMN ============================== */
+/* ============================== CENTER COLUMN ============================== */
+
+.center {
+    display: grid;
+    grid-template-rows: auto 1fr 0fr;
+    overflow: hidden;
+    transition: grid-template-rows 250ms ease;
+}
+
+/* when skill details are open */
+.center.details-open {
+    grid-template-rows: auto 1fr auto;
+}
+
+.skill-gridicon-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 8px;
+    width: 100%;
+
+    padding: 6px 8px;
+    box-sizing: border-box;
+}
+
+.skill-gridicon {
+    width: 64px;
+    height: 64px;
+}
+
+.viewbutton-toolbar {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    color: #dad0ba;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 4px 6px;
+}
+
+.viewbutton-toolbar:hover {
+    opacity: 1;
+}
+
+/* =============================== ZERO SKILLS 404 ================================ */
+
+.skill-list-empty {
+    height: 100%;
+    min-height: 240px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 28px 18px;
+}
+
+.skill-list-empty-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    text-align: center;
+    max-width: 520px;
+
+    opacity: 0.9;
+}
+
+.skill-list-empty-img {
+    width: min(380px, 75%);
+    height: auto;
+    display: block;
+    opacity: 0.95;
+}
+
+.skill-list-empty-title {
+    margin: 0;
+    font-size: 18px;
+    color: #dad0ba;
+    font-weight: 600;
+}
+
+.skill-list-empty-text {
+    margin: 0;
+    font-size: 13px;
+    color: #bdb6a3;
+    opacity: 0.9;
+    line-height: 1.35;
+}
+
+.skillbar-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* LEFT GROUP */
+.skillbar-left {
+    display: flex;
+    gap: 8px;
+}
+
+/* RIGHT GROUP */
+.skillbar-right {
+    display: flex;
+    margin-left: auto;
+}
+
+/* TRUE CENTER */
+#btnViewBuild {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4px;
+}
+
+/* ICON STYLE */
+.skillbar-header i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 120ms ease, color 120ms ease;
+}
+
+.skillbar-header i:hover {
+    opacity: 0.8;
+}
+
+.skillbar-header i.disabled {
+    opacity: 0;
+    cursor: default;
+    pointer-events: none;
+}
+
+.skillbar-icon-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.skillbar-icon-wrapper .skilltype-overlay-icon {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    width: 25%;
+    height: auto;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* ========================================================================== */
+/* =============================== SKILL LIST ================================ */
+/* ======================= SKILL TOOLBAR ======================= */
+
+/* toolbar panel */
+.panel.skill-toolbar-panel {
+    padding: 0;
+    overflow: hidden;
+    border-bottom: none;
+}
+
+/* toolbar container */
+.skill-list-toolbar {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    border-bottom: none;
+    padding: 6px;
+}
+
+/* main control area */
+.skill-toolbar-main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+/* collapsed = single visible row */
+.skill-list-toolbar.collapsed .skill-toolbar-main {
+    max-height: 36px;         /* exactly one row */
+    overflow: hidden;
+    border-bottom: none;
+}
+
+/* expanded = full height */
+.skill-list-toolbar.expanded .skill-toolbar-main {
+    max-height: none;
+    border-bottom: none;
+}
+
+/* hamburger */
+.skill-toolbar-more {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    color: #dad0ba;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 4px 6px;
+}
+
+.skill-toolbar-more:hover {
+    opacity: 1;
+}
+
+.skill-toolbar-extension {
+    display: none;
+}
+
+.skill-toolbar-panel.expanded .skill-toolbar-extension {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+
+    padding: 8px;
+    background: #0c0c0c;
+    border-top: 1px solid #222;
+}
+
+
+
+.toolbar-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    height: 40px;
+    padding: 0 10px;
+
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 6px;
+
+    color: #ccc;
+    cursor: pointer;
+}
+
+.toolbar-control .label {
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.toolbar-control .spacer {
+    flex: 1; /* ← THIS IS THE SHRINK SPACE */
+}
+
+.toolbar-control i {
+    opacity: 0.85;
+}
+
+.toolbar-control:hover {
+    background: #1a1a1a;
+}
+
+.view-modes button {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    color: #dad0ba;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 4px 2px;
+}
+
+/* =======================
+   SKILL SEARCH (toolbar)
+   ======================= */
+
+.skill-search {
+    flex: 1 1 auto;
+    min-width: 10px;
+    max-width: none;
+
+    display: flex;
+    align-items: center;
+
+    height: 30px;
+    padding: 0 5px;
+
+    background: #070707;
+    border: 1px solid #222;
+    border-radius: 6px;
+}
+
+.skill-search input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #ddd;
+
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.skill-search input::placeholder {
+    color: #bdb6a3;
+    opacity: 0.65;
+}
+
+/* ======================= SKILL LIST PANEL ======================= */
+
+.panel.skill-list-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    border-top: none;
+}
+
+.skill-list {
+    flex: 1;
+    overflow-y: auto;
+    border-top: none;
+}
+
+.skill-list-rows {
+    position: relative;
+}
+
+
+/* ========================================================================== */
+
+/* header items */
+.skill-header-item {
+    flex: 0 0 auto;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    opacity: 0.5;
+    padding: 6px 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.02);
+}
+
+
+.skill-header-item.active,
+.toolbar-control:active {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.18);
+}
+
+.skill-header-label {
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.skill-header-icon {
+    cursor: pointer;
+    opacity: 1;
+}
+
+.skill-header-icon.attribute-green {
+    color: #4fa86a;
+}
+
+.skill-header-icon.campaign-gold {
+    color: #e0b24c;
+}
+
+.skill-header-icon.elite-yellow {
+    color: #f2d24b;
+}
+
+.skill-header-icon.energy-blue {
+    color: #2fa9ee;
+}
+
+.skill-header-icon.recharge-yellow {
+    color: #fec34b;
+}
+
+.skill-header-icon.activate-yellow {
+    color: #fac641;
+}
+
+.skill-header-icon.adrenaline-red {
+    color: #b02525;
+}
+
+.skill-header-icon.adrenaline-teal {
+    color: #84dde1;
+}
+
+.skill-header-icon.overcast-grey {
+    color: #8e8e8e;
+}
+
+.skill-header-icon.sacrifice-red {
+    color: #d40000;
+}
+
+.skill-header-icon.filter-favorite-star {
+    color: #ffc600;
+}
+
+.skill-header-icon.filter-rating-star {
+    color: #808080;
+}
+
+.skill-header-icon.filter-pve-only {
+    color: #cf5834;
+}
+
+.skill-header-icon.gold-bronze {
+    --fa-primary-color: #c69f4c;       /* Border */
+    --fa-secondary-color: #675837;     /* Fill */
+
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 1;
+}
+
+.skill-header-icon.upkeep-blue {
+    --fa-primary-color: #ffffff;       /* Border */
+    --fa-secondary-color: #2a80f7;     /* Fill */
+
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 1;
+}
+
+.skill-header-icon.condition-blue {
+    --fa-primary-color: #d99d1a;       /* Border */
+    --fa-secondary-color: #10a6cc;     /* Fill */
+
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 1;
+}
+
+.skill-header-icon.filter-pre-searing {
+    --fa-primary-color: #ababab;       /* Border */
+    --fa-secondary-color: #523b28;     /* Fill */
+
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 1;
+}
+
+.skill-header-icon.filter-label-marks {
+    --fa-primary-color: #ffffff;       /* Border */
+    --fa-secondary-color: #ff0000;     /* Fill */
+
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 1;
+}
+
+.skill-header-icon.filter-books-stack {
+    --fa-primary-color: #c7720a;       /* Border */
+    --fa-secondary-color: #613806;     /* Fill */
+
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 1;
+}
+
+.skill-header-icon.red-blue {
+    --fa-primary-color: #404040;       /* Border */
+    --fa-secondary-color: #ff7700;     /* Fill */
+
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 1;
+}
+
+
+
+
+
+/* ========================================================================== */
+/* ================================ GROUP ROWS =============================== */
+/* ========================================================================== */
+
+.skill-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    height: 44px;
+    line-height: 44px;
+
+    font-weight: 600;
+    font-size: 18px;
+    cursor: pointer;
+    user-select: none;
+
+    padding: 3px 8px;
+    margin: 4px 0;
+    width: 100%;
+
+    background: rgba(255,255,255,0.03);
+    background-clip: padding-box;
+
+    border: 1px solid #222;
+    border-radius: 6px;
+}
+
+.skill-group.level-0 { padding-left: 8px; }
+.skill-group.level-1 { padding-left: 22px; }
+.skill-group.level-2 { padding-left: 36px; }
+.skill-group.level-3 { padding-left: 50px; }
+.skill-group.level-4 { padding-left: 64px; }
+
+
+.group-caret {
+    width: 12px;
+    text-align: center;
+    opacity: 0.85;
+}
+
+.group-icon {
+    object-fit: contain;
+}
+
+.group-icon.profession {
+    width: 32px;
+    height: 32px;
+}
+
+.group-icon.attribute {
+    width: 18px;
+    height: 18px;
+}
+
+.group-icon.resource {
+    width: 16px;
+    height: 16px;
+}
+
+.group-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1;
+}
+
+.group-value {
+    font-weight: 600;
+    font-size: 13px;
+    min-width: 18px;
+    text-align: right;
+}
+
+.group-count {
+    margin-left: 6px;
+    font-size: 0.8em;
+    opacity: 0.55;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+/* ========================================================================== */
+/* =============================== SKILL ROWS ================================ */
+/* ========================================================================== */
+
+.skill-row {
+    width: 100%;
+    padding: 6px 8px;
+}
+
+.skill-row:not(:has(.skill-group)):not(:last-child) {
+    border-bottom: 1px solid #333;
+}
+
+.skill-row-top {
+    display: flex;
+    gap: 8px;
+}
+
+.skill-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border: 1px solid rgba(218,208,186,0.6);
+    background: #000;
+    cursor: grab;
+}
+
+.skill-icon-details {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    border: 1px solid rgba(218,208,186,0.6);
+    background: #000;
+    cursor: grab;
+}
+
+
+.skill-icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.skilltype-overlay-icon {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    width: 25%;
+    pointer-events: none;
+}
+
+.skill-row-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.skill-row-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.skill-row-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.skill-row-costs {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8em;
+}
+
+.skill-row-description {
+    margin-bottom: 4px;
+    margin-top: 6px;
+}
+
+.skill-row-sub {
+    font-size: 0.8em;
+    opacity: 0.75;
+}
+
+.cost-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+}
+
+/* ========================================================================== */
+/* ============================ SKILL DETAILS ================================ */
+/* ========================================================================== */
+.detailsheader-icons {
+    display: flex;
+    flex-direction: column; /* stack vertically */
+    gap: 6px;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    align-items: center;
+    height: 64px;
+    margin: 0;
+    padding: 0;
+}
+
+.detailsheader-icons i {
+    cursor: pointer;
+    text-align: center;
+    opacity: 0.2;
+}
+
+.detailsheader-icons i:hover {
+    opacity: 0.8;
+}
+
+.skill-details {
+    display: none;
+    overflow: hidden;
+}
+
+.center.details-open .skill-details {
+    display: block;
+}
+
+.skill-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+#skillDetailsTitle {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.skill-details-header-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.skill-details-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.skill-details-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.skill-details-sub {
+    font-size: 0.75em;
+}
+
+.skill-title-text {
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.skill-title-text:visited {
+    color: inherit;
+}
+
+.skill-title-text:hover {
+    text-decoration: underline; /* optional */
+}
+
+.skill-title-costs {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    margin-right: 12px;
+    font-size: 0.75em;
+}
+
+
+/* ===============================
+   SKILL DETAILS META SYSTEM
+================================== */
+
+.skill-details-meta {
+    display: block;
+    margin-top: 6px;
+    font-size: 14px;
+}
+
+.meta-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.meta-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ---------- Favorite ---------- */
+
+.meta-favorite i {
+    cursor: pointer;
+    opacity: 0.4;
+    transition: 120ms ease;
+}
+
+.meta-favorite i.active {
+    color: #f5c518;
+    opacity: 1;
+}
+
+.meta-favorite i:hover {
+    opacity: 1;
+}
+
+/* ---------- Rating ---------- */
+
+.meta-rating i {
+    cursor: pointer;
+    font-size: 13px;
+    opacity: 0.35;
+    transition: 120ms ease;
+}
+
+.meta-rating i.active {
+    color: #f5c518;
+    opacity: 1;
+}
+
+.meta-rating i:hover {
+    opacity: 1;
+}
+
+/* ---------- LABEL ICONS ---------- */
+
+.meta-labels {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.meta-label-icon {
+    font-size: 15px;
+    cursor: pointer;
+    transition: 120ms ease;
+    opacity: 0.9;
+}
+
+.meta-label-icon:hover {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+.meta-add-label {
+    font-size: 15px;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: 120ms ease;
+}
+
+.meta-add-label:hover {
+    opacity: 1;
+}
+
+.label-color-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 24px);
+    gap: 6px;
+    margin: 6px 0;
+}
+
+.label-color-option:hover {
+    transform: scale(1.1);
+}
+
+.label-color-grid.secondary.hidden {
+    display: none;
+}
+
+/* ---------- Skillrow Meta Icons ---------- */
+
+/* favorite star */
+.row-meta-favorite {
+    color: #f5c518;
+}
+
+
+
+/* label icons */
+.row-meta-label {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+/* notes icon */
+
+.skill-row-meta:empty {
+    display: none;
+}
+
+.skill-row-meta {
+    margin-top: 4px;
+}
+
+.skill-row-meta-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* spacing BETWEEN groups */
+    font-size: 12px;
+}
+
+/* ===== FAVORITE STAR ===== */
+.row-meta-favorite {
+    color: #f5c518;
+    font-size: 13px; /* slightly larger */
+}
+
+/* ===== RATING GROUP ===== */
+.row-meta-rating-group {
+    display: flex;
+    gap: 2px; /* tight spacing between rating stars */
+}
+
+/* rating stars */
+.row-meta-rating {
+    color: #ffffff;
+    font-size: 10px;
+    opacity: 0.9;
+}
+
+/* ===== NOTE ===== */
+.row-meta-note {
+    font-size: 11px;
+    color: #f16c00;
+    opacity: 1;
+}
+
+/* ===== LABELS ===== */
+.row-meta-label {
+    font-size: 11px;
+    opacity: 0.9;
+}
+
+.meta-new-label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.meta-label-name-small {
+    font-size: 13px;
+    padding: 4px 6px;
+    width: 160px;
+}
+
+.label-color-row {
+    display: flex;
+    gap: 6px;
+}
+
+.label-color-option {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid #333;
+}
+
+.label-color-option.selected {
+    outline: 2px solid white;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Skill meta bookmark labels (including quick assign icons) */
+.meta-label-icon,
+.row-meta-label,
+.meta-label-preview,
+.meta-existing-labels i {
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 1;
+}
+
+.meta-save-label,
+.meta-cancel-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+
+/* ---------- Add Buttons ---------- */
+
+.meta-add-btn {
+    cursor: pointer;
+    opacity: 0.4;
+    transition: 120ms ease;
+}
+
+.meta-add-btn:hover {
+    opacity: 1;
+}
+
+/* ---------- Notes ---------- */
+
+.meta-notes {
+    margin-top: 10px;
+    font-size: 13px;
+    opacity: 0.85;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.meta-note-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meta-note-row i {
+    cursor: pointer;
+    opacity: 0.4;
+    font-size: 12px;
+}
+
+.meta-note-row i:hover {
+    opacity: 1;
+}
+
+.meta-note-input {
+    margin-top: 6px;
+    display: flex;
+    gap: 6px;
+}
+
+.meta-note-input textarea {
+    flex: 1;
+    background: #1b1b1b;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #ddd;
+    padding: 6px;
+    font-size: 13px;
+    resize: vertical;
+    min-height: 50px;
+}
+
+.meta-note-input button {
+    background: #333;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #ddd;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.meta-note-input button:hover {
+    background: #444;
+}
+
+.meta-add-note {
+    font-size: 15px;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: 120ms ease;
+}
+
+.meta-add-note:hover {
+    opacity: 1;
+}
+
+
+/* =========================================
+   LABEL CREATORE
+========================================= */
+
+.meta-label-creator {
+    margin-top: 8px;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 8px;
+
+    max-width: 100%;
+    width: fit-content;
+
+    padding: 10px;
+    border: 1px solid #333;
+    background: #141414;
+}
+
+.meta-label-create-row,
+.meta-label-control-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    width: auto;
+    flex-wrap: wrap;
+}
+
+
+/* ---------- EXISTING LABEL ICONS ---------- */
+
+.meta-existing-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.meta-existing-labels i {
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 120ms ease, opacity 120ms ease;
+    opacity: 0.8;
+}
+
+.meta-existing-labels i:hover {
+    transform: scale(1.15);
+    opacity: 1;
+}
+
+/* ---------- CREATE ROW (preview + input) ---------- */
+
+.meta-label-create-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.meta-label-preview {
+    font-size: 18px;
+}
+
+/* ---------- INPUT FIELD ---------- */
+
+.meta-label-name:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 1px #ffffff;
+}
+
+/* ---------- CONTROL ROW ---------- */
+
+.meta-label-control-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ---------- COLOR PICKERS ---------- */
+
+.meta-label-control-row input[type="color"] {
+    width: 34px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid #333;
+    background: #1a1a1a;
+    cursor: pointer;
+}
+
+.meta-label-control-row input[type="color"]::-webkit-color-swatch {
+    border: none;
+}
+
+/* ---------- SAVE BUTTON ---------- */
+
+.meta-save-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: #1f2a1f;
+    border: 1px solid #4a7a4a;
+    color: #8fd98f;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 120ms ease, border 120ms ease;
+}
+
+.meta-save-label:hover:not(:disabled) {
+    background: #2a3a2a;
+    border-color: #6abf6a;
+}
+
+.meta-save-label:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+/* ---------- CANCEL BUTTON ---------- */
+
+.meta-cancel-label {
+    padding: 4px 8px;
+    background: #2a1a1a;
+    border: 1px solid #7a3a3a;
+    color: #d46a6a;
+    cursor: pointer;
+    transition: background 120ms ease, border 120ms ease;
+}
+
+.meta-cancel-label:hover {
+    background: #3a2222;
+    border-color: #bf4a4a;
+}
+
+/* =========================================
+   BOOK CREATOR
+========================================= */
+
+.book-creator-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.book-icon {
+    font-size: 20px;    
+}
+
+.book-name-input {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #eee;
+    padding: 4px 8px;
+}
+
+.book-save {
+    padding: 4px 10px;
+    background: #1f2a1f;
+    border: 1px solid #4a7a4a;
+    color: #8fd98f;
+    cursor: pointer;
+}
+
+.book-cancel {
+    padding: 4px 8px;
+    background: #2a1a1a;
+    border: 1px solid #7a3a3a;
+    color: #d46a6a;
+    cursor: pointer;
+}
+
+/* BOOK CREATOR */
+
+.book-creator {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #333;
+    background: #141414;
+}
+
+.book-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.book-preview-icon {
+    font-size: 30px;
+    min-width: 22px;
+    text-align: center;
+}
+
+.book-name-row input:focus {
+    border-color: #ffffff;
+}
+
+.book-icon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.book-color-row {
+    display: flex;
+    gap: 8px;
+}
+
+.book-color-row input[type="color"] {
+    width: 36px;
+    height: 28px;
+    border: 1px solid #333;
+    background: #1a1a1a;
+    padding: 0;
+    cursor: pointer;
+}
+
+.book-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 3px solid transparent;   /* reserve space */
+    border-radius: 4px;
+
+    transition: transform 120ms ease, border-color 120ms ease;
+}
+
+.book-icon-wrapper:hover {
+    transform: scale(1.15);
+}
+
+.book-icon-wrapper i {
+    font-size: 24px;
+    opacity: 0.7;
+    transition: opacity 120ms ease;
+}
+
+.book-icon-wrapper:hover i {
+    opacity: 1;
+}
+
+.book-icon-wrapper.active {
+    border-color: #4a7a4a;  /* only change color, not width */
+}
+
+.book-preview-icon.fa-flip-horizontal {
+    position: relative;
+    left: 4px;
+}
+
+.book-icon.closed {
+        margin-left: -3px;
+}
+
+
+/* ========================================================================== */
+/* =============================== SKILL COSTS =============================== */
+/* ========================================================================== */
+
+.skill-costs-block {
+    margin: 8px 0;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 4px 12px;
+    font-size: 13px;
+}
+
+.skill-cost-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.skill-cost-line img {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+}
+
+.dynamic-number {
+    color: #6bdc6b;
+}
+
+
+/* ========================================================================== */
+/* ============================== RIGHT COLUMN =============================== */
+/* ========================================================================== */
+
+.right {
+    display: grid;
+    grid-template-rows: 48px 1fr;
+    gap: 12px;
+    overflow: hidden;
+}
+
+.right-menu {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
+}
+
+.right-menu i {
+    cursor: pointer;
+    font-size: 22px;
+    color: #dad0ba;
+    opacity: 0.65;
+    transition: opacity 120ms ease, color 120ms ease, scale 120ms ease, rotate 120ms ease;
+}
+
+.right-menu i:hover {
+    opacity: 1;
+    transform: rotate(0deg), scale(1.12);
+}
+
+.right-menu i.active {
+    opacity: 1;
+    transform: rotate(0deg), scale(1.18);
+    color: #ffffff;
+}
+
+.right-content {
+    position: relative;
+    overflow-y: auto;
+}
+
+.right-panel {
+    display: none;
+}
+
+.right-panel.active {
+    display: block;
+}
+
+.right-panel i {
+    margin-left: 6px;
+    cursor: pointer;
+    opacity: 0.8;
+    color: #dad0ba;
+}
+
+.right-panel i:hover {
+    opacity: 1;
+}
+
+
+/* ========================================================================== */
+/* ================================ BOOKS ==================================== */
+/* ========================================================================== */
+
+.book-group {
+    margin-bottom: 14px;
+}
+
+.book-group-header {
+    display: flex;
+    align-items: center;
+    gap: 0px;
+    font-weight: 600;
+    opacity: 0.9;
+    margin-bottom: 6px;
+}
+
+.book {
+    margin: 0 0 10px 0;
+    padding: 6px 10px;
+    border-left: 4px solid var(--book-color, transparent);
+}
+
+
+.book-header {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    padding: 4px 0;
+    opacity: 0.85;
+    transition: opacity 0.15s ease;
+}
+
+.book-header:hover {
+    opacity: 1;
+}
+
+.book-content {
+    margin-left: 2px;
+    padding: 4px 0 6px;
+    display: none;
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+.book.open > .book-content {
+    display: block;
+}
+
+.book-content.empty {
+    font-style: italic;
+    opacity: 0.6;
+}
+
+.book-icon.open {
+    display: none;
+    margin-left: -5px;
+}
+
+.book.open .book-icon.open {
+    display: inline-block;
+}
+
+.book.open .book-icon.closed {
+    display: none;
+}
+
+/* ============================
+   SECTION LAYOUT
+============================ */
+
+.book-section {
+    margin: 6px 0 10px;
+}
+
+.book-section-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.8;
+    margin-bottom: 6px;
+}
+
+/* ============================
+   SKILL GRID
+============================ */
+
+.book-section-body {
+    padding-left: 0px;
+    border-left: 3px solid transparent;
+}
+
+.book-section-body.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 36px);
+    gap: 6px;
+}
+
+
+.book-section-body.drop-active {
+    border-left: 3px solid #4caf50;
+    background: #1a221a;
+}
+
+/* ============================
+   SKILL ICON STYLE
+============================ */
+
+.book-skill-item {
+    position: relative;
+    width: 36px;
+    height: 36px;
+}
+
+.book-skill-icon {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    cursor: grab;
+}
+
+.book-skill-icon:active {
+    cursor: grabbing;
+}
+
+.book-skill-remove {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+
+    font-size: 16px;
+
+    /* duotone colors */
+    --fa-primary-color: #e53935;   /* red */
+    --fa-secondary-color: #000000; /* black */
+    --fa-primary-opacity: 0;
+    --fa-secondary-opacity: 0;
+
+    opacity: 0;
+    pointer-events: none;
+
+    transform: scale(0.85);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.book-skill-item:hover .book-skill-remove {
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 1;
+    opacity: 1; 
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+/* ========================================================================== */
+/* ============================ ATTRIBUTE FILTERS ============================ */
+/* ========================================================================== */
+
+#panel-settings {
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-gutter: stable;
+}
+
+.attr-group {
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.attr-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    background: rgba(255,255,255,0.04);
+    cursor: pointer;
+    border-left: 4px solid var(--prof-color);
+}
+
+.attr-group-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.attr-group-toggle {
+    opacity: 0.7;
+}
+
+.attr-group.collapsed .attr-group-body {
+    display: none;
+}
+
+.attribute-setting {
+    padding: 6px 8px 8px;
+    margin-bottom: 12px;
+}
+
+.attr-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.attr-name {
+    opacity: 0.85;
+}
+
+.attr-value {
+    font-weight: 600;
+    color: #f0c674;
+}
+
+.prof-icon {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    margin-right: 2px;
+    flex-shrink: 0;
+}
+
+.attribute-setting input[type="range"] {
+    width: 95%;
+}
+
+/* ========================================================================== */
+/* =============================== BUILDS PANEL ============================== */
+/* ========================================================================== */
+
+.builds-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* build container = filter-pill twin */
+.build-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    padding: 8px;
+
+    /* base neutral */
+    background: rgba(255,255,255,0.03);
+
+    /* profession tint layer */
+    background-image:
+        linear-gradient(
+            180deg,
+            var(--build-prof-a, transparent),
+            var(--build-prof-a, transparent)
+        );
+
+    background-clip: padding-box;
+}
+
+.build-row[data-dual="1"] {
+    background-image:
+        linear-gradient(
+            90deg,
+            var(--build-prof-a, transparent),
+            var(--build-prof-b, transparent)
+        );
+}
+
+
+/* header */
+.build-row-header {
+    display: flex;
+    align-items: center;
+}
+
+.build-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #dad0ba;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+/* skillbar spacing only */
+.build-mini-skillbar {
+    margin: 4px 0;
+}
+
+/* delete icon subtle but reachable */
+.build-row-header .build-delete {
+    margin-left: 8px;
+    font-size: 13px;
+    opacity: 0.45;
+}
+
+.build-row-header .build-delete:hover {
+    opacity: 1;
+}
+
+/* bottom actions: LEFT aligned under skillbar */
+.build-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 2px;
+}
+
+/* icon buttons (same vibe as pill-invert / toolbar icons) */
+.build-btn {
+    background: transparent;
+    border: none;
+    padding: 2px;
+
+    cursor: pointer;
+    font-size: 14px;
+    color: #dad0ba;
+    opacity: 0.6;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.build-btn.build-delete i {
+    color: #dad0ba;
+    opacity: 0.45;
+    transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.build-btn.build-delete:hover i {
+    color: #e53935;   /* red on hover */
+    opacity: 1;
+}
+
+
+
+.build-btn.build-load {
+    color: #dad0ba;
+}
+
+.build-btn.build-info {
+    color: #4fa86a;
+}
+
+/* =========================
+   BUILD VIEWER ICON BUTTONS
+   ========================= */
+
+.bv-icon-btn {
+    background: transparent;
+    border: none;
+    padding: 2px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+.bv-icon-btn i {
+    font-size: 18px;
+    color: #dad0ba;
+
+    opacity: 0.6;
+    transition:
+        opacity 120ms ease,
+        color 120ms ease,
+        transform 120ms ease;
+}
+
+/* hover = same vibe as right-menu / skillbar icons */
+.bv-icon-btn:hover i {
+    opacity: 1;
+    transform: scale(1.12);
+}
+
+/* semantic variants */
+.bv-icon-btn.bv-load i {
+    color: #dad0ba;
+}
+
+.bv-icon-btn.bv-save i {
+    color: #dad0ba;
+}
+
+.bv-icon-btn.bv-delete i {
+    opacity: 0.45;
+}
+
+.bv-icon-btn.bv-delete:hover i {
+    color: #e53935;
+    opacity: 1;
+}
+
+.bv-icon-btn.bv-decode i {
+    color: #dad0ba;
+}
+
+.bv-icon-btn.bv-close i {
+    font-size: 20px;
+}
+
+.bv-skill-chart-icons {
+    display: flex;
+    width: 100%;
+    margin-top: 12px;
+
+    padding-left: 8%;
+    padding-right: 4%;
+
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bv-skill-chart-icons img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    flex: 0 0 auto;
+}
+
+/* Shared collapsible header style */
+.bv-attrs-header,
+.bv-skills-header,
+.bv-stats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 10px;
+    border-radius: 12px;
+
+    background: rgba(255,255,255,0.05);
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: background 120ms ease, opacity 120ms ease;
+}
+
+/* Hover effect (same subtle behavior everywhere) */
+.bv-attrs-header:hover,
+.bv-skills-header:hover,
+.bv-stats-header:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.bv-pie-wrap {
+    height: 180px;              /* smaller pie */
+    margin: 20px 0;             /* top & bottom spacing */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bv-pie-wrap canvas {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.fastcast-purple {
+    color: #b36bff;
+}
+
+.expertise-green {
+    color: #7aa84f;
+}
+
+.energy-modified {
+    color: inherit; /* fallback */
+}
+
+
+/* ========================================================================== */
+/* ============================== TYPOGRAPHY ================================ */
+/* ========================================================================== */
+
+h2 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    color: #dad0ba;
+}
+
+
+/* ========================================================================== */
+/* ================================ UTIL ==================================== */
+/* ========================================================================== */
+
+.demo-btn {
+    margin-top: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.friend-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bv-attrs-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+/* ========================================================================== */
+/* =========================== FOLD RANGE LAYOUT ============================ */
+
+
+/* ========================================================================== */
+/* =============================== MOBILE =================================== */
+/* ========================================================================== */
+
+@media (max-width: 900px) {
+
+    html, body {
+        overflow-x: hidden;
+        background-attachment: scroll;
+        background-position: center top;
+        font-size: 14px;
+    }
+
+    .app {
+        display: flex;
+        width: 300vw;
+        height: 100dvh;
+        transform: translateX(-100vw);
+        transition: transform 280ms ease;
+        margin: 0;
+        padding: 0;
+        gap: 0;
+    }
+
+    .filters,
+    .center,
+    .right {
+        width: 100vw;
+        height: 100dvh;
+        flex-shrink: 0;
+    }
+
+    .panel {
+        height: 100%;
+        border-radius: 0;
+        margin: 0;
+	border: none;
+        padding: 7px;
+    }
+
+.attribute-setting input[type="range"] {
+    touch-action: none;
+}
+
+.skill-gridicon-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(auto-fit, 48px));
+  grid-auto-rows: 48px;
+
+  gap: 4px;
+  width: 100%;
+  padding: 6px 8px;
+  box-sizing: border-box;
+
+  align-content: start; /* prevents vertical stretch if parent is tall */
+}
+
+
+.skill-gridicon img {
+    width: 48px;
+    height: 48px;
+}
+
+.skill-row-costs {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.8em;
+}
+
+.skill-row-costs img {
+    width: 12px;
+    height: 12px;
+}
+
+.cost-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 23px;
+}
+
+.skill-title-costs {
+    gap: 2px;
+    margin-left: auto;
+    margin-right: 4px;
+    font-size: 0.75em;
+}
+
+.skill-details-text {
+    font-size: 0.75em;
+}
+
+.skill-title-costs img {
+    width: 16px;
+    height: 16px;
+}
+
+    .bv-attrs-wrap {
+        grid-template-columns: 1fr;
+    }
+
+.bv-skill-chart-icons {
+    margin-top: 0px;
+
+    padding-left: 9%;
+    padding-right: 2px;
+}
+.bv-skill-chart-icons img {
+    width: 32px;
+    height: 32px;
+}
+
+}
